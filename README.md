@@ -17,18 +17,21 @@ This bot places buy and sell orders around a reference price (mid-price or last 
 ## ⚙️ Features
 
 ### ✅ Inventory Management
+
 - Dynamically adjusts order sizes based on your current portfolio.
 - Avoids over-exposure with:
   - `max_inventory_pct`: e.g., 50% base, 50% quote.
   - `max_inventory`: Absolute cap on base asset holdings.
 
 ### 📈 Trend Analysis
+
 - Uses **Simple Moving Average (SMA)** over configurable `sma_period`.
 - If current price > SMA, the bot reduces **buy** order sizes.
 - If current price < SMA, it reduces **sell** order sizes.
 - Smoothly tracks short-term momentum while maintaining market presence.
 
 ### 🔐 Risk Management
+
 - `stop_loss_pct`: Cancels all orders and halts trading when triggered.
 - `max_inventory`: Stops placing new buy orders when base holdings exceed threshold.
 
@@ -43,10 +46,19 @@ if inventory_pct > max_inventory_pct:
     # Reduce buy orders
 elif inventory_pct < (1 - max_inventory_pct):
     # Reduce sell orders
+```
 
+###Trend Logic
+
+```python
 trend_factor = (current_price - sma) / sma
 # Reduces buy orders in uptrend, reduces sell orders in downtrend
- 
+```
+
+### Stop-Loss Check
+
+```python
 price_change = (current_price - last_price) / last_price
 if price_change < -stop_loss_pct:
-    # Stop trading
+     # Stop trading
+```
