@@ -1,6 +1,6 @@
 # Advanced Pure Market Making (PMM) Strategy - Hummingbot Custom Script
 
-This repository implements an **enhanced Pure Market Making (PMM)** strategy using the Hummingbot framework. It is designed to **optimize spread capturing** while managing inventory, detecting market trends, and risk control mechanisms like stop-loss and exposure limits.
+This repository implements an **enhanced Pure Market Making (PMM)** strategy using the Hummingbot framework. It is designed to **optimize spread capturing** while managing inventory, detecting market trends, and implementing robust risk control mechanisms like stop-loss and exposure limits.
 
 ---
 
@@ -23,42 +23,23 @@ This bot places buy and sell orders around a reference price (mid-price or last 
   - `max_inventory_pct`: e.g., 50% base, 50% quote.
   - `max_inventory`: Absolute cap on base asset holdings.
 
-### 📈 Trend Analysis
+### 📈 Trend Analysis *(Simulated due to Paper Trading)*
 
-- Uses **Simple Moving Average (SMA)** over configurable `sma_period`.
-- If current price > SMA, the bot reduces **buy** order sizes.
-- If current price < SMA, it reduces **sell** order sizes.
-- Smoothly tracks short-term momentum while maintaining market presence.
+In a live environment, this strategy would dynamically adjust its quoting behavior based on **Simple Moving Average (SMA)** to capture short-term market momentum:
 
-### 🔐 Risk Management
+- If current price > SMA → Reduces **buy** order sizes (uptrend).
+- If current price < SMA → Reduces **sell** order sizes (downtrend).
 
-- `stop_loss_pct`: Cancels all orders and halts trading when triggered.
-- `max_inventory`: Stops placing new buy orders when base holdings exceed threshold.
+However, since this bot is currently running on the **paper trading exchange**, real-time candle data (required for SMA computation) is not available.
 
----
+- Thus, **SMA-based adjustments are conceptually included but not active**.
+- This showcases how the strategy can be extended for production deployment on real exchanges (e.g., Binance, KuCoin).
 
-## 🧠 Key Concepts
+### 📊 Volatility-Aware Spreads (ATR Integration)
 
-### 💡 Inventory Skew Logic
-
-```python
-if inventory_pct > max_inventory_pct:
-    # Reduce buy orders
-elif inventory_pct < (1 - max_inventory_pct):
-    # Reduce sell orders
-```
-
-###Trend Logic
+- Calculates **Average True Range (ATR)** to measure volatility.
+- Dynamically widens spreads in high volatility scenarios to reduce risk.
+- Formula:
 
 ```python
-trend_factor = (current_price - sma) / sma
-# Reduces buy orders in uptrend, reduces sell orders in downtrend
-```
-
-### Stop-Loss Check
-
-```python
-price_change = (current_price - last_price) / last_price
-if price_change < -stop_loss_pct:
-     # Stop trading
-```
+volatility_spread = (atr / price) * volatility_multiplier
